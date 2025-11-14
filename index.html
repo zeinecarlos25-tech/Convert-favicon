@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modern Favicon Generator</title>
+
+<style>
+    :root {
+        --primary: #3b82f6;
+        --primary-dark: #1d4ed8;
+        --bg: #f1f5f9;
+        --card-bg: #ffffff;
+        --radius: 14px;
+    }
+
+    body {
+        font-family: "Inter", Arial, sans-serif;
+        background: var(--bg);
+        padding: 40px 20px;
+        text-align: center;
+        color: #333;
+    }
+
+    h1 {
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 20px;
+        color: #1e293b;
+    }
+
+    .box {
+        background: var(--card-bg);
+        width: 100%;
+        max-width: 450px;
+        padding: 30px;
+        margin: auto;
+        border-radius: var(--radius);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        text-align: left;
+    }
+
+    /* --- CUSTOM FILE INPUT --- */
+    .file-input {
+        margin: 20px 0;
+        display: block;
+    }
+
+    .file-input input {
+        display: none;
+    }
+
+    .file-label {
+        display: inline-block;
+        background: var(--primary);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 600;
+        transition: 0.2s ease-in-out;
+        text-align: center;
+        width: 100%;
+    }
+
+    .file-label:hover {
+        background: var(--primary-dark);
+    }
+
+
+    .controls {
+        margin-top: 25px;
+    }
+
+    .controls label {
+        display: block;
+        font-size: 14px;
+        margin: 13px 0 5px;
+        color: #334155;
+        font-weight: 600;
+    }
+
+    /* --- CUSTOM RANGE SLIDER --- */
+    input[type="range"] {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 6px;
+        background: #e2e8f0;
+        border-radius: 6px;
+        outline: none;
+        margin-top: 4px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        background: var(--primary);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+        background: var(--primary-dark);
+    }
+
+    /* --- CUSTOM COLOR PICKER --- */
+    input[type="color"] {
+        -webkit-appearance: none;
+        border: none;
+        width: 45px;
+        height: 45px;
+        border-radius: 10px;
+        cursor: pointer;
+        padding: 0;
+        background: none;
+    }
+
+    input[type="color"]::-webkit-color-swatch {
+        border-radius: 10px;
+        border: none;
+    }
+
+    input[type="color"]::-webkit-color-swatch-wrapper {
+        padding: 0;
+        border-radius: 10px;
+    }
+
+    /* --- PREVIEW --- */
+    #preview {
+        margin-top: 25px;
+        display: none;
+        text-align: center;
+    }
+
+    #preview img {
+        width: 64px;
+        height: 64px;
+        border-radius: 8px;
+        border: 3px solid #ddd;
+        transition: 0.3s ease-in-out;
+    }
+
+    /* --- BUTTONS --- */
+    .btn {
+        background: var(--primary);
+        padding: 12px 20px;
+        color: white;
+        border-radius: 10px;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 15px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .btn:hover {
+        background: var(--primary-dark);
+    }
+
+    .btn-group {
+        margin-top: 25px;
+        text-align: center;
+    }
+
+</style>
+</head>
+<body>
+
+<h1>Favicon Generator</h1>
+
+<div class="box">
+
+    <p>Select an image to generate your favicon (32×32)</p>
+
+    <!-- CUSTOM FILE INPUT -->
+    <div class="file-input">
+        <label for="upload" class="file-label">Choose Image</label>
+        <input type="file" id="upload" accept="image/*">
+    </div>
+
+    <div class="controls">
+        <label>Border Radius</label>
+        <input type="range" id="radius" min="0" max="16" value="4">
+
+        <label>Border Color</label>
+        <input type="color" id="borderColor" value="#dddddd">
+
+        <label>Brightness</label>
+        <input type="range" id="brightness" min="50" max="150" value="100">
+    </div>
+
+    <div id="preview">
+        <p>Preview:</p>
+        <img id="imgPreview">
+    </div>
+
+    <div class="btn-group">
+        <a id="downloadPng" class="btn" style="display:none;" download="favicon.png">Download PNG</a>
+        <a id="downloadIco" class="btn" style="display:none;" download="favicon.ico">Download ICO</a>
+    </div>
+
+</div>
+
+<script>
+    const upload = document.getElementById("upload");
+    const previewBox = document.getElementById("preview");
+    const imgPreview = document.getElementById("imgPreview");
+
+    const downloadPng = document.getElementById("downloadPng");
+    const downloadIco = document.getElementById("downloadIco");
+
+    const radius = document.getElementById("radius");
+    const borderColor = document.getElementById("borderColor");
+    const brightness = document.getElementById("brightness");
+
+    upload.addEventListener("change", function () {
+        const file = upload.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            imgPreview.src = e.target.result;
+            previewBox.style.display = "block";
+
+            const img = new Image();
+            img.onload = function () {
+                updateCanvas(img);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    function updatePreview() {
+        imgPreview.style.borderRadius = radius.value + "px";
+        imgPreview.style.borderColor = borderColor.value;
+        imgPreview.style.filter = `brightness(${brightness.value}%)`;
+    }
+
+    function updateCanvas(image) {
+        updatePreview();
+
+        const canvas = document.createElement("canvas");
+        canvas.width = 32;
+        canvas.height = 32;
+        const ctx = canvas.getContext("2d");
+
+        ctx.filter = `brightness(${brightness.value}%)`;
+        ctx.drawImage(image, 0, 0, 32, 32);
+
+        const pngUrl = canvas.toDataURL("image/png");
+        downloadPng.href = pngUrl;
+        downloadIco.href = pngUrl;
+        downloadPng.style.display = "inline-block";
+        downloadIco.style.display = "inline-block";
+    }
+
+    radius.addEventListener("input", updatePreview);
+    borderColor.addEventListener("input", updatePreview);
+    brightness.addEventListener("input", updatePreview);
+</script>
+
+</body>
+</html>
