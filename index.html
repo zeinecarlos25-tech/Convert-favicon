@@ -1,0 +1,328 @@
+<!Doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, inital-scale=1.0">
+   <link rel="icon" type="image/x-icon" href="logo.ico">
+    <title>Convert favicon</title>
+    <style>
+    :root {
+        --primary: #3b82f6;
+        --primary-dark: #1d4ed8;
+        --bg: #f1f5f9;
+        --card-bg: #ffffff;
+        --radius: 14px;
+    }
+      *{
+        margin: 0;
+        padding: 0;
+      }
+      body{
+        font-family: Times New Roman, 'Segoe UI';
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background: #f2f2f2;
+      }
+      .central{
+        text-align: center;
+        border-radius: 8px;
+        background: #fff;
+        width: 400px;
+        height: 500px;
+        overflow-y: auto;
+      }
+      .margin{
+        margin-top: 30px;
+      }
+      /* --- CUSTOM FILE INPUT --- */
+    .file-input {
+        margin: 20px 0;
+        display: block;
+    }
+
+    .file-input input {
+        display: none;
+    }
+
+    .file-label {
+        display: inline-block;
+        background: var(--primary);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 600;
+        transition: 0.2s ease-in-out;
+        text-align: center;
+        width: 70%;
+    }
+
+    .file-label:hover {
+        background: var(--primary-dark);
+    }
+
+
+    .controls {
+        margin-top: 25px;
+    }
+
+    .controls label {
+        display: block;
+        font-size: 14px;
+        margin: 13px 0 5px;
+        color: #334155;
+        font-weight: 600;
+    }
+
+    /* --- CUSTOM RANGE SLIDER --- */
+    input[type="range"] {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 6px;
+        background: #e2e8f0;
+        border-radius: 6px;
+        outline: none;
+        margin-top: 4px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        background: var(--primary);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+        background: var(--primary-dark);
+    }
+
+    /* --- CUSTOM COLOR PICKER --- */
+    input[type="color"] {
+        -webkit-appearance: none;
+        border: none;
+        width: 45px;
+        height: 45px;
+        border-radius: 10px;
+        cursor: pointer;
+        padding: 0;
+        background: none;
+    }
+
+    input[type="color"]::-webkit-color-swatch {
+        border-radius: 10px;
+        border: none;
+    }
+
+    input[type="color"]::-webkit-color-swatch-wrapper {
+        padding: 0;
+        border-radius: 10px;
+    }
+
+    /* --- PREVIEW --- */
+    #preview {
+        margin-top: 25px;
+        display: none;
+        text-align: center;
+    }
+
+    #preview img {
+        width: 64px;
+        height: 64px;
+        border-radius: 8px;
+        border: 3px solid #ddd;
+        transition: 0.3s ease-in-out;
+    }
+
+    /* --- BUTTONS --- */
+    .btn {
+        background: var(--primary);
+        padding: 12px 20px;
+        color: white;
+        border-radius: 10px;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 15px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .btn:hover {
+        background: var(--primary-dark);
+    }
+
+    .btn-group {
+        margin-top: 25px;
+        text-align: center;
+    }
+    .item-margin{
+      margin: 9px;
+    }
+    </style>
+  </head>
+  <body>
+    
+    <div class="central">
+      
+      <div class="margin"></div>
+      
+      <h1> Convert favicon</h1>
+      
+      <br>
+      
+      <div class="item-margin">
+      
+      <p>Select an image to generate your favicon (32×32)</p>
+
+    <!-- CUSTOM FILE INPUT -->
+    <div class="file-input">
+        <label for="upload" class="file-label">Choose Image</label>
+        <input type="file" id="upload" accept="image/*">
+    </div>
+
+    <div class="controls">
+        <label>Border Radius</label>
+        <input type="range" id="radius" min="0" max="16" value="4">
+
+        <label>Border Color</label>
+        <input type="color" id="borderColor" value="#dddddd">
+
+        <label>Brightness</label>
+        <input type="range" id="brightness" min="50" max="150" value="100">
+    </div>
+
+    <div id="preview">
+        <p>Preview:</p>
+        <img id="imgPreview">
+    </div>
+
+    <div class="btn-group">
+        <a id="downloadPng" class="btn" style="display:none;" download="favicon.png">Download PNG</a>
+        <a id="downloadIco" class="btn" style="display:none;" download="favicon.ico">Download ICO</a>
+    </div>
+      
+      </div>
+      
+      </div>
+    
+  </body>
+<script>
+    const upload = document.getElementById("upload");
+    const previewBox = document.getElementById("preview");
+    const imgPreview = document.getElementById("imgPreview");
+
+    const downloadPng = document.getElementById("downloadPng");
+    const downloadIco = document.getElementById("downloadIco");
+
+    const radius = document.getElementById("radius");
+    const borderColor = document.getElementById("borderColor");
+    const brightness = document.getElementById("brightness");
+
+    upload.addEventListener("change", function () {
+        const file = upload.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            imgPreview.src = e.target.result;
+            previewBox.style.display = "block";
+
+            const img = new Image();
+            img.onload = function () {
+                updateCanvas(img);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    function updatePreview() {
+        imgPreview.style.borderRadius = radius.value + "px";
+        imgPreview.style.borderColor = borderColor.value;
+        imgPreview.style.filter = `brightness(${brightness.value}%)`;
+    }
+
+  function updateCanvas(image) {
+    updatePreview();
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 32;
+    canvas.height = 32;
+    const ctx = canvas.getContext("2d");
+
+    ctx.filter = `brightness(${brightness.value}%)`;
+    ctx.drawImage(image, 0, 0, 32, 32);
+
+    // PNG normal
+    const pngUrl = canvas.toDataURL("image/png");
+
+    // Criar nome aleatório
+    const randomName = "favicon_" + Math.random().toString(36).substr(2, 8);
+
+    downloadPng.href = pngUrl;
+    downloadPng.download = randomName + ".png";
+    downloadPng.style.display = "inline-block";
+
+    // --- GERAR ICO VERDADEIRO ---
+    canvas.toBlob(function (blob) {
+        const reader = new FileReader();
+        reader.onload = function () {
+            const pngData = new Uint8Array(reader.result);
+
+            const icoData = createICO(pngData, 32, 32);
+
+            const icoBlob = new Blob([icoData], { type: "image/x-icon" });
+            const icoUrl = URL.createObjectURL(icoBlob);
+
+            downloadIco.href = icoUrl;
+            downloadIco.download = randomName + ".ico";
+            downloadIco.style.display = "inline-block";
+        };
+        reader.readAsArrayBuffer(blob);
+    }, "image/png");
+}
+
+
+
+    radius.addEventListener("input", updatePreview);
+    borderColor.addEventListener("input", updatePreview);
+    brightness.addEventListener("input", updatePreview);
+    
+    
+    //
+function createICO(pngData, width, height) {
+    const header = new Uint8Array([
+        0, 0, 1, 0, 1, 0, 
+        width, height, 
+        0, 0, 
+        1, 0, 32, 0
+    ]);
+
+    const pngSize = pngData.length;
+    const sizeBytes = new Uint8Array([
+        pngSize & 255,
+        (pngSize >> 8) & 255,
+        (pngSize >> 16) & 255,
+        (pngSize >> 24) & 255
+    ]);
+
+    const offsetBytes = new Uint8Array([22, 0, 0, 0]);
+
+    const ico = new Uint8Array(22 + pngSize);
+    ico.set(header, 0);
+    ico.set(sizeBytes, 14);
+    ico.set(offsetBytes, 18);
+    ico.set(pngData, 22);
+
+    return ico;
+}
+
+</script>
+
+</html>
